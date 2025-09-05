@@ -4,7 +4,7 @@ Ever wished you could run C# code like a script in a default operating system en
 This JScript-based tool offers the following approach.
 
 ## Usage
-1. Copy the ClickSharp.jse file to a desired location.
+1. Copy the [ClickSharp.jse](https://raw.githubusercontent.com/katsu-oh/click-sharp/refs/heads/main/ClickSharp.jse) file to a desired location.
 1. Rename ClickSharp.jse to reflect the intended program name (e.g., ClickSharp.jse → Hello.jse).
 1. Double-click the renamed .jse file. This action will automatically generate a boilerplate C# source file, compile it, and run the resulting program.
 1. Modify the generated C# source file as required.
