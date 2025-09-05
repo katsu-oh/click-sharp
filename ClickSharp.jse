@@ -1,0 +1,65 @@
+compiler = '%windir%\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe';
+options = '/target:winexe /optimize+ /warn:0 /nologo';
+
+// object
+fso = new ActiveXObject('Scripting.FileSystemObject');
+shell = new ActiveXObject('WScript.Shell');
+
+// path
+thisPath = WScript.scriptFullName;
+csPath = thisPath.replace(/jse?$/i, 'cs');
+exePath = thisPath.replace(/jse?$/i, 'exe');
+
+// template
+csTemplate =
+  'using System;' + '\r\n' +
+  'using System.Windows.Forms;' + '\r\n' +
+  '\r\n' +
+  'class Program' + '\r\n' +
+  '{' + '\r\n' +
+  '    static void Main(string[] args)' + '\r\n' +
+  '    {' + '\r\n' +
+  '        string title = "Hello";' + '\r\n' +
+  '        string message = "Hello, World!\\n";' + '\r\n' +
+  '        for (int i = 0; i < args.Length; i++)' + '\r\n' +
+  '        {' + '\r\n' +
+  '            message += args[i] + "\\n";' + '\r\n' +
+  '        }' + '\r\n' +
+  '        MessageBox.Show(message, title);' + '\r\n' +
+  '    }' + '\r\n' +
+  '}' + '\r\n';
+
+// date
+try { 
+  csDate = new Date(fso.getFile(csPath).dateLastModified);
+} catch (e) { 
+  csFile = fso.createTextFile(csPath);
+  csFile.write(csTemplate);
+  csFile.close();
+  csDate = new Date(fso.getFile(csPath).dateLastModified);
+}
+try { 
+  exeDate = new Date(fso.getFile(exePath).dateLastModified);
+} catch (e) { 
+  exeDate = new Date(-8.64e15);
+}
+
+// command
+compileCommand = '"' + compiler + '" /out:"' + exePath + '" ' + options + ' "' + csPath + '"';
+executeCommand = '"' + exePath + '"';
+args = WScript.Arguments;
+for (i = 0; i < args.length; i++) {
+  executeCommand += ' "' + args(i) + '"';
+}
+
+// compile
+if (csDate.getTime() >= exeDate.getTime()) {
+  compileError = shell.run(compileCommand, 0, true);
+  if (compileError != 0) {
+    shell.run('cmd /s /c "title Visual C# compiler&' + compileCommand + '&pause>nul"');
+    WScript.quit();
+  }
+}
+
+// execute
+shell.run(executeCommand);
